@@ -447,19 +447,27 @@
 
     <script>
         // Centralized User Account Database
-        let usersDatabase = {
+        function loadDatabaseFromStorage() {
+    const savedData = localStorage.getItem('systema_users_db');
+    if (savedData) {
+        try {
+            usersDatabase = JSON.parse(savedData);
+        } catch(e) {
+            console.error("Data parse collision.", e);
+        }
+    } else {
+        // Only set the default admin if there is absolutely no data saved
+        usersDatabase = {
             "admin": {
                 password: "password",
-                attendanceGrid: {
-                    "Sample Profile A": [false, false, false, false, false],
-                    "Sample Profile B": [false, false, false, false, false]
-                },
+                attendanceGrid: {},
                 attendanceHistory: [],
-                assignmentFolders: [
-                    { id: 101, title: "Initial Project Roster", passers: { "Sample Profile A": true, "Sample Profile B": false } }
-                ]
+                assignmentFolders: []
             }
         };
+    }
+}
+
 
         // Active Session Context Pointers
         let currentUser = null;
