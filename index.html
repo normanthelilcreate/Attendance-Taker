@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEMA: LIGHT TRACKING HUB</title>
+    <style>
+        :root {
+            --bg-main: #f1f5f9;          
+            --panel-bg: #ffffff;         
+            --border-clr: #cbd5e1;       
+            --accent-blue: #0284c7;      
+            --accent-blue-hover: #0369a1;
+            --accent-green: #10b981;     
+            --text-main: #1e293b;        
+            --text-muted: #64748b;       
+            --font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            padding: 40px 20px;
+        }
+
+        .dashboard-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-self: flex-start; 
+        }
+
+        .auth-container {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-clr);
+            border-radius: 8px;
+            padding: 35px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .auth-header h2 {
+            font-size: 24px;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .auth-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        header.top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-clr);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .nav-tabs { display: flex; gap: 10px; }
+
+        .nav-tab-btn {
+            background: #f8fafc;
+            border: 1px solid var(--border-clr);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-tab-btn.active {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+        }
+
+        .view-window {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-clr);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 20px;
+        }
+
+        .control-panel { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        .form-input {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-clr);
+            padding: 12px;
+            color: var(--text-main);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+            width: 100%; 
+        }
+        .form-input:focus { outline: none; border-color: var(--accent-blue); background-color: #fff; }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background-color: var(--accent-blue-hover); }
+
+        .btn-sec {
+            background-color: #ffffff;
+            border: 1px solid var(--border-clr);
+            color: var(--text-main);
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-sec:hover { border-color: var(--text-muted); background-color: #f8fafc; }
+
+        .btn-danger-all {
+            background-color: #fff1f2;
+            border: 1px solid #f43f5e;
+            color: #f43f5e;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn-danger-all:hover { background-color: #e11d48; color: #fff; }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-toggle span {
+            color: var(--accent-blue);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .sheet-container { display: flex; flex-direction: column; gap: 8px; }
+
+        .sheet-row {
+            display: grid;
+            grid-template-columns: 240px repeat(5, 1fr) 50px;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sheet-header-row {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        .sheet-header-row .cell-name { text-align: left; padding-left: 10px; }
+
+        .cell-name {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-clr);
+            padding: 14px;
+            border-radius: 6px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .interactive-box {
+            background-color: #f1f5f9;
+            border: 1px solid var(--border-clr);
+            height: 46px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        .interactive-box.state-active {
+            background-color: var(--accent-green) !important;
+            border-color: #059669;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .grid-frozen .interactive-box {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .btn-delete-row {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            font-size: 22px;
+            cursor: pointer;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-delete-row:hover { color: #e11d48; }
+
+        .assignment-folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .folder-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-clr);
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .folder-card:hover { border-color: var(--accent-blue); background: #f0f9ff; }
+        
+        .folder-icon { font-size: 32px; margin-bottom: 10px; color: var(--accent-blue); }
+        .folder-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; color: var(--text-main); }
+        .folder-meta { font-size: 12px; color: var(--text-muted); }
+
+        .archive-section {
+            margin-top: 30px;
+            background: #f8fafc;
+            border: 1px dashed var(--border-clr);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .archive-title { font-size: 14px; font-weight: bold; text-transform: uppercase; color: var(--text-muted); margin-bottom: 15px; }
+        
+        .archive-flex-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .archive-card-item {
+            background: #ffffff;
+            border: 1px solid var(--border-clr);
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .archive-card-item:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .archive-card-item.viewing-now {
+            border-color: var(--accent-blue);
+            background-color: #f0f9ff;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-window" class="auth-container">
+        <div id="login-form-view">
+            <div class="auth-header">
+                <h2>System Gateway</h2>
+                <p>Sign in to access tracking panels</p>
+            </div>
+            <div class="form-group">
+                <label>User Identifier</label>
+                <input type="text" class="form-input" id="login-user" value="admin">
+            </div>
+            <div class="form-group">
+                <label>Security Phrase</label>
+                <input type="password" class="form-input" id="login-pass" value="password">
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="processAuth()">Access System</button>
+            <div class="auth-toggle">No account? <span onclick="toggleAuthView(true)">Register Registry</span></div>
+        </div>
+
+        <div id="register-form-view" class="hidden">
+            <div class="auth-header">
+                <h2>Create Registry</h2>
+                <p>Register new system administrator credentials</p>
+            </div>
+            <div class="form-group">
+                <label>New User Identifier</label>
+                <input type="text" class="form-input" id="reg-user" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Security Phrase</label>
+                <input type="password" class="form-input" id="reg-pass" placeholder="Enter password">
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="processRegistration()">Complete Registration</button>
+            <div class="auth-toggle">Existing credential? <span onclick="toggleAuthView(false)">Return to Login</span></div>
+        </div>
+    </div>
+
+    <div id="dashboard-window" class="dashboard-wrapper hidden">
+        
+        <header class="top-navbar">
+            <div class="nav-tabs">
+                <button id="tab-btn-attendance" class="nav-tab-btn active" onclick="switchModule('attendance')">ATTENDANCE ROSTER</button>
+                <button id="tab-btn-assignments" class="nav-tab-btn" onclick="switchModule('assignments')">ASSIGNMENT ENGINE</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span id="user-display-tag" style="font-size: 13px; font-weight: bold; color: var(--text-muted);"></span>
+                <button class="btn-sec" style="border-color: #f43f5e; color: #e11d48;" onclick="logoutSystem()">Terminate Session</button>
+            </div>
+        </header>
+
+        <div id="view-attendance" class="view-window">
+            
+            <div class="window-header">
+                <div class="control-panel" id="attendance-mutator-controls">
+                    <input type="text" id="att-name-input" class="form-input" style="width: 260px;" placeholder="Enter worker/student name...">
+                    <button class="btn-primary" onclick="addName('attendance')">Add to Team</button>
+                </div>
+                
+                <div id="attendance-frozen-banner" class="control-panel hidden">
+                    <span style="color: var(--accent-blue); font-weight: bold; font-size: 14px;">⚡ VIEWING ARCHIVED SNAPSHOT TIMELINE</span>
+                    <button class="btn-sec" onclick="exitArchiveView()" style="border-color: var(--accent-blue); color: var(--accent-blue);">Return to Live Matrix</button>
+                </div>
+
+                <div class="control-panel">
+                    <button id="btn-archive-action" class="btn-sec" style="border-color: var(--accent-green); color: #047857; background-color: #ecfdf5;" onclick="archiveWeek()">Archive Current Week</button>
+                    <button class="btn-danger-all" onclick="clearActive('attendance')">Purge Current Team</button>
+                </div>
+            </div>
+
+            <div class="sheet-container" id="attendance-sheet-grid-wrapper">
+                <div class="sheet-row sheet-header-row">
+                    <div class="cell-name">Target Matrix Profile</div>
+                    <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div>
+                    <div style="visibility: hidden;">Del</div>
+                </div>
+                <div id="attendance-rows-box"></div>
+            </div>
+
+            <div class="archive-section">
+                <div class="archive-title">Historical Weekly Vault (Click cards to review backup logs)</div>
+                <div class="archive-flex-box" id="attendance-archive-box"></div>
+                <button class="btn-danger-all" style="margin-top: 15px; padding: 8px 14px; font-size: 11px;" onclick="purgeArchive('attendance')">Clear All Historical Archives</button>
+            </div>
+        </div>
+
+        <div id="view-assignments" class="view-window hidden">
+            
+            <div id="assignment-dashboard-subview">
+                <div class="window-header">
+                    <div class="control-panel">
+                        <input type="text" id="assign-folder-input" class="form-input" style="width: 280px;" placeholder="Name assignment folder (e.g., Project 1)...">
+                        <button class="btn-primary" onclick="createAssignmentFolder()">Create Folder</button>
+                    </div>
+                    <button class="btn-danger-all" onclick="clearActive('assignments')">Delete All Folders</button>
+                </div>
+
+                <h3 style="font-size: 14px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 15px;">Active Assignment Registries</h3>
+                <div class="assignment-folder-grid" id="folder-box-container"></div>
+            </div>
+
+            <div id="assignment-folder-subview" class="hidden">
+                <div class="window-header">
+                    <div>
+                        <button class="btn-sec" style="margin-bottom: 8px;" onclick="exitFolderView()">&larr; Back to Folders</button>
+                        <h2 id="active-folder-title" style="color: var(--text-main); text-transform: uppercase; font-size: 18px;">Directory Target Content</h2>
+                    </div>
+                    <div class="control-panel">
+                        <input type="text" id="assign-name-input" class="form-input" style="width: 240px;" placeholder="Add member to project...">
+                        <button class="btn-primary" onclick="addName('assignments')">Add Profile</button>
+                    </div>
+                </div>
+
+                <div class="sheet-container">
+                    <div class="sheet-row sheet-header-row" style="grid-template-columns: 350px 1fr 50px;">
+                        <div class="cell-name">Target Parameter Profile</div>
+                        <div>Submission Verification (Green = Logged Clear)</div>
+                        <div style="visibility: hidden;">Del</div>
+                    </div>
+                    <div id="assignment-rows-box"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Centralized User Account Database
+        let usersDatabase = {
+            "admin": {
+                password: "password",
+                attendanceGrid: {
+                    "Sample Profile A": [false, false, false, false, false],
+                    "Sample Profile B": [false, false, false, false, false]
+                },
+                attendanceHistory: [],
+                assignmentFolders: [
+                    { id: 101, title: "Initial Project Roster", passers: { "Sample Profile A": true, "Sample Profile B": false } }
+                ]
+            }
+        };
+
+        // Active Session Context Pointers
+        let currentUser = null;
+        let currentActiveModule = 'attendance';
+        let openFolderId = null;
+        let selectedArchivedWeekId = null;
+
+        // --- LocalStorage Persistence Layer ---
+        function saveDatabaseToStorage() {
+            localStorage.setItem('systema_users_db', JSON.stringify(usersDatabase));
+        }
+
+        function loadDatabaseFromStorage() {
+            const savedData = localStorage.getItem('systema_users_db');
+            if (savedData) {
+                try {
+                    usersDatabase = JSON.parse(savedData);
+                } catch(e) {
+                    console.error("Data parse signature collision. Reverting to structural fallback.", e);
+                }
+            }
+        }
+
+        // Initialize and pull data cache immediately on page load
+        loadDatabaseFromStorage();
+
+        // --- Authentication Engine ---
+        function toggleAuthView(showRegister) {
+            if(showRegister) {
+                document.getElementById('login-form-view').classList.add('hidden');
+                document.getElementById('register-form-view').classList.remove('hidden');
+            } else {
+                document.getElementById('register-form-view').classList.add('hidden');
+                document.getElementById('login-form-view').classList.remove('hidden');
+            }
+        }
+
+        function processAuth() {
+            const userEl = document.getElementById('login-user');
+            const passEl = document.getElementById('login-pass');
+            
+            if(!userEl || !passEl) {
+                alert("Critical System Input Error: Fields not accessible.");
+                return;
+            }
+
+            const user = userEl.value.trim();
+            const pass = passEl.value;
+
+            if (usersDatabase[user] && usersDatabase[user].password === pass) {
+                currentUser = user;
+                document.getElementById('user-display-tag').innerText = `OPERATOR: ${user.toUpperCase()}`;
+                document.getElementById('auth-window').classList.add('hidden');
+                document.getElementById('dashboard-window').classList.remove('hidden');
+                document.body.style.alignItems = "flex-start";
+                
+                selectedArchivedWeekId = null;
+                openFolderId = null;
+                switchModule('attendance');
+            } else {
+                alert("Invalid user parameters or security phrase.");
+            }
+        }
+
+        function processRegistration() {
+            const userEl = document.getElementById('reg-user');
+            const passEl = document.getElementById('reg-pass');
+
+            if(!userEl || !passEl) {
+                alert("Critical System Input Error: Fields not accessible.");
+                return;
+            }
+
+            const user = userEl.value.trim();
+            const pass = passEl.value;
+
+            if (!user || !pass) {
+                alert("Fields cannot remain empty.");
+                return;
+            }
+            if (usersDatabase[user]) {
+                alert("Identifier string matches existing directory signature.");
+                return;
+            }
+
+            // Provision a clean workspace for the new user profile
+            usersDatabase[user] = {
+                password: pass,
+                attendanceGrid: {},
+                attendanceHistory: [],
+                assignmentFolders: []
+            };
+
+            saveDatabaseToStorage(); // Commit registration data instantly
+            alert("Registration successful. Account allocated on record.");
+            
+            userEl.value = '';
+            passEl.value = '';
+            toggleAuthView(false);
+        }
+
+        function logoutSystem() {
+            currentUser = null;
+            document.getElementById('dashboard-window').classList.add('hidden');
+            document.getElementById('auth-window').classList.remove('hidden');
+            document.body.style.alignItems = "center";
+            
+            if(document.getElementById('login-user')) document.getElementById('login-user').value = '';
+            if(document.getElementById('login-pass')) document.getElementById('login-pass').value = '';
+            if(document.getElementById('reg-user')) document.getElementById('reg-user').value = '';
+            if(document.getElementById('reg-pass')) document.getElementById('reg-pass').value = '';
+        }
+
+        // --- Module Routing ---
+        function switchModule(moduleType) {
+            currentActiveModule = moduleType;
+            document.getElementById('view-attendance').classList.add('hidden');
+            document.getElementById('view-assignments').classList.add('hidden');
+            document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-btn-' + moduleType).classList.add('active');
+
+            if (moduleType === 'attendance') {
+                document.getElementById('view-attendance').classList.remove('hidden');
+                renderAttendance();
+            } else {
+                document.getElementById('view-assignments').classList.remove('hidden');
+                exitFolderView();
+            }
+        }
+
+        // --- Data Sheet Mutators ---
+        function addName(type) {
+            if (!currentUser) return;
+            let userData = usersDatabase[currentUser];
+
+            if (type === 'attendance') {
+                if (selectedArchivedWeekId !== null) return;
+                const input = document.getElementById('att-name-input');
+                const name = input.value.trim();
+                if(!name) return;
+                if (!userData.attendanceGrid[name]) {
+                    userData.attendanceGrid[name] = [false, false, false, false, false];
+                }
+                input.value = '';
+                saveDatabaseToStorage();
+                renderAttendance();
+            } else {
+                const input = document.getElementById('assign-name-input');
+                const name = input.value.trim();
+                if(!name || openFolderId === null) return;
+                
+                const folder = userData.assignmentFolders.find(f => f.id === openFolderId);
+                if (folder && folder.passers[name] === undefined) {
+                    folder.passers[name] = false;
+                }
+                input.value = '';
+                saveDatabaseToStorage();
+                renderFolderContents(openFolderId);
+            }
+        }
+
+        function removeName(type, name) {
+            if (!currentUser) return;
+            let userData = usersDatabase[currentUser];
+
+            if (type === 'attendance') {
+                if (selectedArchivedWeekId !== null) return;
+                delete userData.attendanceGrid[name];
+                saveDatabaseToStorage();
+                renderAttendance();
+            } else {
+                const folder = userData.assignmentFolders.find(f => f.id === openFolderId);
+                if (folder) {
+                    delete folder.passers[name];
+                    saveDatabaseToStorage();
+                    renderFolderContents(openFolderId);
+                }
+            }
+        }
+
+        function clearActive(type) {
+            if (!currentUser) return;
+            let userData = usersDatabase[currentUser];
+
+            if (type === 'attendance') {
+                if (selectedArchivedWeekId !== null) return;
+                if(confirm("Purge the current active week roster dataset completely?")) {
+                    userData.attendanceGrid = {};
+                    saveDatabaseToStorage();
+                    renderAttendance();
+                }
+            } else {
+                if(confirm("Destructive Command: Wipe out all existing assignment directories from workspace?")) {
+                    userData.assignmentFolders = [];
+                    saveDatabaseToStorage();
+                    renderAssignmentFolders();
+                }
+            }
+        }
+
+        // --- Attendance Engine ---
+        function toggleAttendanceCell(name, dayIndex) {
+            if (selectedArchivedWeekId !== null || !currentUser) return; 
+            usersDatabase[currentUser].attendanceGrid[name][dayIndex] = !usersDatabase[currentUser].attendanceGrid[name][dayIndex];
+            saveDatabaseToStorage();
+            renderAttendance();
+        }
+
+        function archiveWeek() {
+            if (selectedArchivedWeekId !== null || !currentUser) return;
+            let userData = usersDatabase[currentUser];
+
+            if (Object.keys(userData.attendanceGrid).length === 0) {
+                alert("Active metrics board contains zero entities.");
+                return;
+            }
+            const currentWeekNumber = userData.attendanceHistory.length + 1;
+            const deepSnapshot = JSON.parse(JSON.stringify(userData.attendanceGrid));
+            
+            userData.attendanceHistory.push({
+                id: Date.now(),
+                weekNum: currentWeekNumber,
+                savedData: deepSnapshot
+            });
+
+            for(let name in userData.attendanceGrid) {
+                userData.attendanceGrid[name] = [false, false, false, false, false];
+            }
+            saveDatabaseToStorage();
+            alert(`Week ${currentWeekNumber} saved securely.`);
+            renderAttendance();
+        }
+
+        function inspectArchivedWeek(archiveId) {
+            selectedArchivedWeekId = archiveId;
+            renderAttendance();
+        }
+
+        function exitArchiveView() {
+            selectedArchivedWeekId = null;
+            renderAttendance();
+        }
+
+        function purgeArchive(type) {
+            if(!currentUser) return;
+            if(confirm("Purge all history vaults from memory cache?")) {
+                usersDatabase[currentUser].attendanceHistory = [];
+                selectedArchivedWeekId = null;
+                saveDatabaseToStorage();
+                renderAttendance();
+            }
+        }
+
+        // --- Renderer Pipeline ---
+        function renderAttendance() {
+            if (!currentUser) return;
+            let userData = usersDatabase[currentUser];
+
+            const container = document.getElementById('attendance-rows-box');
+            const gridWrapper = document.getElementById('attendance-sheet-grid-wrapper');
+            container.innerHTML = '';
+
+            let displaySource = userData.attendanceGrid;
+            if (selectedArchivedWeekId !== null) {
+                const targetArchive = userData.attendanceHistory.find(h => h.id === selectedArchivedWeekId);
+                if (targetArchive) {
+                    displaySource = targetArchive.savedData;
+                    gridWrapper.classList.add('grid-frozen');
+                    document.getElementById('attendance-mutator-controls').classList.add('hidden');
+                    document.getElementById('attendance-frozen-banner').classList.remove('hidden');
+                    document.getElementById('btn-archive-action').disabled = true;
+                    document.getElementById('btn-archive-action').style.opacity = "0.4";
+                }
+            } else {
+                gridWrapper.classList.remove('grid-frozen');
+                document.getElementById('attendance-frozen-banner').classList.add('hidden');
+                document.getElementById('attendance-mutator-controls').classList.remove('hidden');
+                document.getElementById('btn-archive-action').disabled = false;
+                document.getElementById('btn-archive-action').style.opacity = "1";
+            }
+
+            const keys = Object.keys(displaySource);
+            if(keys.length === 0) {
+                container.innerHTML = `<div style="grid-column: span 7; text-align: center; color: var(--text-muted); padding: 30px; font-size:14px;">No target personnel metrics present in this view matrix.</div>`;
+            }
+
+            keys.forEach(name => {
+                const row = document.createElement('div');
+                row.className = 'sheet-row';
+                row.style.marginBottom = '6px';
+
+                const nameCell = document.createElement('div');
+                nameCell.className = 'cell-name';
+                nameCell.innerText = name;
+                row.appendChild(nameCell);
+
+                for(let i=0; i<5; i++) {
+                    const box = document.createElement('div');
+                    box.className = 'interactive-box';
+                    if(displaySource[name][i]) box.classList.add('state-active');
+                    box.onclick = () => toggleAttendanceCell(name, i);
+                    row.appendChild(box);
+                }
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-delete-row';
+                delBtn.innerHTML = '&#215;';
+                if (selectedArchivedWeekId !== null) {
+                    delBtn.style.visibility = 'hidden'; 
+                } else {
+                    delBtn.onclick = () => removeName('attendance', name);
+                }
+                row.appendChild(delBtn);
+
+                container.appendChild(row);
+            });
+
+            const historyBox = document.getElementById('attendance-archive-box');
+            historyBox.innerHTML = '';
+            if(userData.attendanceHistory.length === 0) {
+                historyBox.innerHTML = `<div style="color: var(--text-muted); font-size:13px; grid-column: span 3; padding: 10px;">Vault directories are currently clear.</div>`;
+            }
+            
+            userData.attendanceHistory.forEach(log => {
+                const card = document.createElement('div');
+                card.className = 'archive-card-item';
+                if(selectedArchivedWeekId === log.id) card.classList.add('viewing-now');
+                
+                card.onclick = () => inspectArchivedWeek(log.id);
+                card.innerHTML = `
+                    <div style="font-weight: 800; font-size: 14px; color: var(--accent-blue); display:flex; align-items:center; gap:6px;">
+                        <span>📂</span> WEEK DIRECTORY #${log.weekNum}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Contains snapshots for ${Object.keys(log.savedData).length} members</div>
+                    <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-top:4px; text-transform:uppercase;">[Click to Review]</div>
+                `;
+                historyBox.appendChild(card);
+            });
+        }
+
+        // --- Assignments Engine ---
+        function createAssignmentFolder() {
+            if(!currentUser) return;
+            let userData = usersDatabase[currentUser];
+
+            const input = document.getElementById('assign-folder-input');
+            const title = input.value.trim();
+            if(!title) return;
+
+            const currentProfiles = Object.keys(userData.attendanceGrid);
+            const initialPassersMap = {};
+            currentProfiles.forEach(p => initialPassersMap[p] = false);
+
+            const newFolder = {
+                id: Date.now(),
+                title: title,
+                passers: initialPassersMap
+            };
+
+            userData.assignmentFolders.push(newFolder);
+            input.value = '';
+            saveDatabaseToStorage();
+            renderAssignmentFolders();
+        }
+
+        function renderAssignmentFolders() {
+            if(!currentUser) return;
+            let userData = usersDatabase[currentUser];
+
+            const box = document.getElementById('folder-box-container');
+            box.innerHTML = '';
+
+            if (userData.assignmentFolders.length === 0) {
+                box.innerHTML = `<div style="color: var(--text-muted); font-size:13px; padding: 10px;">No assignment metrics directory active.</div>`;
+                return;
+            }
+
+            userData.assignmentFolders.forEach(folder => {
+                const totalEntries = Object.keys(folder.passers).length;
+                const totalPassers = Object.values(folder.passers).filter(v => v === true).length;
+
+                const card = document.createElement('div');
+                card.className = 'folder-card';
+                card.onclick = () => enterFolderView(folder.id);
+
+                card.innerHTML = `
+                    <div class="folder-icon">&#128194;</div>
+                    <div class="folder-title">${folder.title}</div>
+                    <div class="folder-meta">Verified Submissions: <b>${totalPassers}</b> / ${totalEntries} on record</div>
+                `;
+                box.appendChild(card);
+            });
+        }
+
+        function enterFolderView(folderId) {
+            openFolderId = folderId;
+            document.getElementById('assignment-dashboard-subview').classList.add('hidden');
+            document.getElementById('assignment-folder-subview').classList.remove('hidden');
+            renderFolderContents(folderId);
+        }
+
+        function exitFolderView() {
+            openFolderId = null;
+            document.getElementById('assignment-folder-subview').classList.add('hidden');
+            document.getElementById('assignment-dashboard-subview').classList.remove('hidden');
+            renderAssignmentFolders();
+        }
+
+        function togglePasserState(name) {
+            if(!currentUser) return;
+            const folder = usersDatabase[currentUser].assignmentFolders.find(f => f.id === openFolderId);
+            if(folder) {
+                folder.passers[name] = !folder.passers[name];
+                saveDatabaseToStorage();
+                renderFolderContents(openFolderId);
+            }
+        }
+
+        function renderFolderContents(folderId) {
+            if(!currentUser) return;
+            const folder = usersDatabase[currentUser].assignmentFolders.find(f => f.id === folderId);
+            if(!folder) return;
+
+            document.getElementById('active-folder-title').innerText = `Directory Map: ${folder.title}`;
+            
+            const container = document.getElementById('assignment-rows-box');
+            container.innerHTML = '';
+
+            const profiles = Object.keys(folder.passers);
+            if(profiles.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); padding:30px; text-align:center; font-size:14px;">No profile logs cataloged down inside this folder container yet.</div>`;
+                return;
+            }
+
+            profiles.forEach(name => {
+                const row = document.createElement('div');
+                row.className = 'sheet-row';
+                row.style.gridTemplateColumns = '350px 1fr 50px';
+                row.style.marginBottom = '6px';
+
+                const nameCell = document.createElement('div');
+                nameCell.className = 'cell-name';
+                nameCell.innerText = name;
+                row.appendChild(nameCell);
+
+                const interactiveBox = document.createElement('div');
+                interactiveBox.className = 'interactive-box';
+                if(folder.passers[name]) interactiveBox.classList.add('state-active');
+                interactiveBox.onclick = () => togglePasserState(name);
+                row.appendChild(interactiveBox);
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-delete-row';
+                delBtn.innerHTML = '&#215;';
+                delBtn.onclick = () => removeName('assignments', name);
+                row.appendChild(delBtn);
+
+                container.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
