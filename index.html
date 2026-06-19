@@ -479,6 +479,37 @@
         function saveDatabaseToStorage() {
             localStorage.setItem('systema_users_db', JSON.stringify(usersDatabase));
         }
+        // --- Import/Export Engine ---
+function exportDatabase() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(usersDatabase));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "systema_backup.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function importDatabase(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            if(confirm("Warning: This will overwrite your current device data. Proceed?")) {
+                usersDatabase = importedData;
+                saveDatabaseToStorage();
+                location.reload(); 
+            }
+        } catch (err) {
+            alert("Error: Invalid backup file.");
+        }
+    };
+    reader.readAsText(file);
+}
+
 
         function loadDatabaseFromStorage() {
             const savedData = localStorage.getItem('systema_users_db');
