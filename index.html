@@ -430,6 +430,17 @@
                         <button class="btn-primary" onclick="addName('assignments')">Add Profile</button>
                     </div>
                 </div>
+<div class="control-panel">
+    <input type="text" id="assign-name-input" ... >
+    <button class="btn-primary" ... >Add to Team</button>
+
+    <!-- NEW BUTTONS GO HERE -->
+    <button class="btn-sec" onclick="exportDatabase()">Export Data</button>
+    <input type="file" id="import-file" style="display:none" onchange="importDatabase(event)">
+    <button class="btn-sec" onclick="document.getElementById('import-file').click()">Import Data</button>
+</div>
+
+                
 
                 <div class="sheet-container">
                     <div class="sheet-row sheet-header-row" style="grid-template-columns: 350px 1fr 50px;">
